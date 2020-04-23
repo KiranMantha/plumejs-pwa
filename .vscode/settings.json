@@ -1,0 +1,12 @@
+{
+  "liveServer.settings.CustomBrowser": "chrome",
+  "liveServer.settings.host": "localhost",
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.root": "/",
+  "liveServer.settings.https": {
+    "enable": true,
+    "cert": "/Kiran/poc/plumejs-pwa/https/localhost.pem",
+    "key": "/Kiran/poc/plumejs-pwa/https/localhost.key",
+    "passphrase": "12345678"
+  }
+}
