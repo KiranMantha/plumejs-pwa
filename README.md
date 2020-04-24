@@ -1,3 +1,5 @@
+[Demo](http://kiranmantha.github.io/plumejs-pwa/)
+
 ## setting https in live server
 
 1. create `https` folder in root
