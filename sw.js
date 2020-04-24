@@ -1,6 +1,7 @@
-var VERSION = "static-v1";
+var VERSION = "static-v2";
 
 var cacheFirstFiles = [
+  "/",
   "/index.html",
   "/main.chunk.js",
   "/vendors-main.chunk.js",
@@ -95,15 +96,6 @@ self.onfetch = function (evt) {
   evt.respondWith(fromCache(evt.request).catch(function () {
     return fromNetwork(evt.request).catch(update(evt.request).then(refresh));
   }));
-}
-
-// // prompt for pwa install
-self.onbeforeinstallprompt = function (e) {
-  // log the platforms provided as options in an install prompt 
-  console.log(e.platforms); // e.g., ["web", "android", "windows"] 
-  e.userChoice.then(function (choiceResult) {
-    console.log(choiceResult.outcome); // either "accepted" or "dismissed"
-  }, handleError);
 }
 
 // to send message from chrome debugging tools

@@ -1,23 +1,49 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[5],{42:function(t,e,s){"use strict";s.r(e);var o=s(0),n=s(1);let c=class SampleService{constructor(){}testMeth(){console.log("testmethod in sample service")}};c=Object(o.__decorate)([Object(n.Injectable)(),Object(o.__metadata)("design:paramtypes",[])],c);let i=class TestService{constructor(t){this.sampleSrvc=t}testMeth(){this.sampleSrvc.testMeth()}getUsers(){return fetch("https://api.github.com/users?since=135")}};i=Object(o.__decorate)([Object(n.Injectable)(),Object(o.__metadata)("design:paramtypes",[c])],i);let r=class TestEle{constructor(){this.testprops={}}render(){return n.html`
-			<div>
-				testing web component2 ${this.testprops.name}
-				<button class='btn btn-sm btn-primary' onclick=${t=>this.counts(t)}>hi</button>
-				<input
-					value=${this.testprops.name}
-					oninput=${t=>this.change(t.target.value)}
-				/>
-			</div>
-		`}counts(t){this.testprops.oncount("testing from click")}change(t){this.testprops.oncount(t)}mount(){console.log("component loaded"),console.log("props: ",this.testprops)}unmount(){console.log("component unloaded")}};Object(o.__decorate)([Object(n.Input)(),Object(o.__metadata)("design:type",Object)],r.prototype,"testprops",void 0),r=Object(o.__decorate)([Object(n.Component)({selector:"test-ele"})],r);let a=class SampleEle{constructor(t){this.testSrvc=t,this.inputField=Object(n.useRef)(null),this.test="sample 123",this.outCount=this.count.bind(this),this.props={oncount:this.outCount,name:this.test}}enablePersonsRoute(){window.localStorage.setItem("plumejs","now persons route is activated")}disablePersonsRoute(){window.localStorage.removeItem("plumejs")}render(){return n.html`
-			<p>Persons route has <b>canActivate</b> gaurd which check for <i>plumejs</i> key in localstorage. Click enable button to navigate to persons route. Click disable button to disable persons route. </p>
-			<div>
-				<button class='btn btn-sm btn-primary' onclick=${this.enablePersonsRoute} title='click persons nav to check persons route'>Enable Persons route</button>
-				<button class='btn btn-sm btn-primary' style='margin-left: 10px' onclick=${this.disablePersonsRoute} title='click persons nav to check persons route'>Disable Persons route</button>
-			</div>
-			<div>${"username.greet".translate({name:"test user"})}</div>
-			<input type='text' ref=${this.inputField} /><button class='btn btn-sm btn-primary' onclick=${()=>{this.getRef()}}>click</button>
-			<div>
-				<h1>Sample two way data binding</h1>
-				testing web component1 ${this.test}
-				<test-ele testprops=${this.props}></test-ele>
-			</div>
-		`}count(t){this.test=t,this.props.name=t,this.update()}beforeMount(){console.log("before mounting...")}mount(){console.log("component loaded"),console.log(this.inputField),this.testSrvc.testMeth()}unmount(){console.log("component unloaded")}getRef(){console.log(this.inputField)}};a=Object(o.__decorate)([Object(n.Component)({selector:"sample-ele"}),Object(o.__metadata)("design:paramtypes",[i])],a)}}]);
+(window.webpackJsonp=window.webpackJsonp||[]).push([[5],{48:function(t,e,o){"use strict";o.r(e);var s=o(0),l=o(1),i=o(8);let n=class NestedModal{constructor(t){this.modalsrvc=t,this.nestedModalData={}}openAnotherModal(){const t=this.modalsrvc.show({renderTemplate:()=>l.html`<div>i'm nested modal</div>`,modalTitle:"nested modal",modalClass:"nested-class"});t.onOpen.subscribe(()=>{console.log("nested modal open")}),t.onClose.subscribe(()=>{console.log("nested modal closed")})}render(){return l.html`
+			<div>sample modal</div>
+			<div>${this.nestedModalData.message}</div>
+			<button
+				class="button is-small is-info"
+				onclick=${()=>{this.openAnotherModal()}}
+			>
+				open another modal
+			</button>
+		`}};Object(s.__decorate)([Object(l.Input)(),Object(s.__metadata)("design:type",Object)],n.prototype,"nestedModalData",void 0),n=Object(s.__decorate)([Object(l.Component)({selector:"nested-modal"}),Object(s.__metadata)("design:paramtypes",[i.ModalService])],n);let a=class PlumeComponents{constructor(t,e){this.modalsrvc=t,this.notifySrvc=e,this.toggleInput={onchange:this.onToggleChange.bind(this),onText:"ON",offText:"OFF"},this.multiselectToggles={enableMultiselect:{onchange:t=>{this.multiSelectOptions.multiple=t,this.multiSelectOptions.resetWidget=!0,this.update()}},disableDropdown:{onchange:t=>{this.multiSelectOptions.disableDropdown=t,this.multiSelectOptions.resetWidget=!0,this.update()}},enableFilter:{onchange:t=>{this.multiSelectOptions.enableFilter=t,this.multiSelectOptions.resetWidget=!0,this.update()}}},this.multiSelectOptions={data:[{name:"option1"},{name:"option2"},{name:"option3"},{name:"option4"},{name:"option5"}],displayField:"name",multiple:!1,disableDropdown:!1,buttonText:t=>0===t.length?"None selected":t.length>3?t.length+" selected":t.map(t=>t.name).join(", "),onchange:t=>{console.log(t)}}}openModal(){const t=this.modalsrvc.show({renderTemplate:()=>l.html`<nested-modal nestedModalData=${{message:"Hello World"}}></nested-modal>`,modalTitle:"testing modal",modalClass:"sample-class"});t.onOpen.subscribe(()=>{console.log("main modal open",t.Id)}),t.onClose.subscribe(()=>{console.log("main modal closed")})}notify(){this.notifySrvc.sendMessage("hello world",i.NotificationType.Info)}notifyWithAutoHide(){this.notifySrvc.sendMessage("hello world",i.NotificationType.Info,!0)}onToggleChange(t){console.log(t)}render(){return l.html`
+					<div>
+						<h2 class='title is-3 mb-20'>Plumejs UI Control Collection</h2>
+						<div class='mb-20'>
+							<h5 class='title is-5'>Modal</h5>
+							<button
+								class="button is-small is-info"
+								onclick=${()=>{this.openModal()}}
+							>
+								Open Modal
+							</button>
+						</div>
+						<div class='mb-20'>
+							<h5 class='title is-5'>Notification</h5>
+							<button class='button is-small is-info mr-10' onclick=${()=>{this.notify()}}>Notify with action</button>
+							<button class='button is-small is-info' onclick=${()=>{this.notifyWithAutoHide()}}>Notify with auto hide</button>
+						</div>
+						<div class='mb-20'>
+							<h5 class='title is-5'>Toggle Button</h5>
+							<toggle-button toggleOptions=${this.toggleInput}></toggle-button>
+						</div>
+						<div class='mb-20'>
+							<h5 class='title is-5'>Multi select</h5>
+							<div>
+								<div class='is-flex mb-20'>
+									<span>enable multi select</span> <toggle-button toggleOptions=${this.multiselectToggles.enableMultiselect}></toggle-button>
+								</div>
+								<div class='is-flex mb-20'>
+									<span>disable dropdown</span> <toggle-button toggleOptions=${this.multiselectToggles.disableDropdown}></toggle-button>
+								</div>
+								<div class='is-flex mb-20'>
+									<span>enable filtering</span> <toggle-button toggleOptions=${this.multiselectToggles.enableFilter}></toggle-button>
+								</div>
+							</div>
+							<div class='is-flex'>
+								<multi-select multiSelectOptions=${this.multiSelectOptions}></multi-select>
+							</div>
+						</div>
+					</div>
+			`}};a=Object(s.__decorate)([Object(l.Component)({selector:"plume-comp"}),Object(s.__metadata)("design:paramtypes",[i.ModalService,i.NotificationService])],a)}}]);
