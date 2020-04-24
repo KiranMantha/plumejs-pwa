@@ -36,3 +36,7 @@ openssl req -days 3650 -new -newkey rsa:2048 -key localhost.key -x509 -out local
 7. Update the passphrase to be the password you used when creating the key
 
 chrome://flags/#allow-insecure-localhost for it to properly load
+
+sample pqa icons can be found [here](https://appiconmaker.co/)
+
+https://www.akberiqbal.com/
