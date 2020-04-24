@@ -7,21 +7,13 @@ var cacheFirstFiles = [
   "/runtime.bundle.js",
 ];
 
-//var cacheFirstFiles = [];
+var OFFLINE_PAGE = '/offline.html'
 
 var networkFirstFiles = [];
 
 // Below is the service worker code.
 
-var cacheFiles = cacheFirstFiles.concat(networkFirstFiles);
-
-self.oninstall = function (event) {
-  event.waitUntil(
-    caches.open(VERSION).then(cache => {
-      return cache.addAll(cacheFiles);
-    })
-  );
-};
+var cacheFiles = cacheFirstFiles.concat(networkFirstFiles).concat(OFFLINE_PAGE);
 
 function removeCache() {
   return caches.keys().then(function (cacheNames) {
@@ -39,6 +31,8 @@ function removeCache() {
 function fromNetwork(request) {
   return fetch(request).then(function (response) {
     return response;
+  }).catch(function() {
+    return fromCache(OFFLINE_PAGE);
   });
 }
 
@@ -82,6 +76,14 @@ function refresh(response) {
   });
 }
 
+self.oninstall = function (event) {
+  event.waitUntil(
+    caches.open(VERSION).then(cache => {
+      return cache.addAll(cacheFiles);
+    })
+  );
+};
+
 self.onactivate = function (event) {
   if (navigator.onLine) {
     event.waitUntil(removeCache())
@@ -96,13 +98,13 @@ self.onfetch = function (evt) {
 }
 
 // // prompt for pwa install
-// self.onbeforeinstallprompt = function (e) {
-//   // log the platforms provided as options in an install prompt 
-//   console.log(e.platforms); // e.g., ["web", "android", "windows"] 
-//   e.userChoice.then(function (choiceResult) {
-//     console.log(choiceResult.outcome); // either "accepted" or "dismissed"
-//   }, handleError);
-// }
+self.onbeforeinstallprompt = function (e) {
+  // log the platforms provided as options in an install prompt 
+  console.log(e.platforms); // e.g., ["web", "android", "windows"] 
+  e.userChoice.then(function (choiceResult) {
+    console.log(choiceResult.outcome); // either "accepted" or "dismissed"
+  }, handleError);
+}
 
 // to send message from chrome debugging tools
 self.onpush = function (event) {
