@@ -2,10 +2,6 @@ var VERSION = "static-v1";
 
 var cacheFirstFiles = [
   "/index.html",
-  "/3.chunk.js",
-  "/4.chunk.js",
-  "/5.chunk.js",
-  "/6.chunk.js",
   "/main.chunk.js",
   "/vendors-main.chunk.js",
   "/runtime.bundle.js",

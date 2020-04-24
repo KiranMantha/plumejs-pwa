@@ -3,9 +3,9 @@
 1. create `https` folder in root
 2. navigate to https folder in terminal and run following commands
 
-### Self-Signed Certificate for using with VS Code Live Server
+#### Self-Signed Certificate for using with VS Code Live Server
 
-### Save both files in a location you will remember
+#### Save both files in a location you will remember
 
 1. create a private key
 openssl genrsa -aes256 -out localhost.key 2048
@@ -39,4 +39,8 @@ chrome://flags/#allow-insecure-localhost for it to properly load
 
 sample pqa icons can be found [here](https://appiconmaker.co/)
 
+### example pwa:
 https://www.akberiqbal.com/
+
+### useful links
+https://jakearchibald.github.io/isserviceworkerready/resources.html
