@@ -1,4 +1,4 @@
-function notifyMe(message) {
+function notifyMe() {
   // Let's check if the browser supports notifications
   if (!("Notification" in window)) {
     alert("This browser does not support desktop notification");
@@ -15,34 +15,32 @@ function notifyMe(message) {
     Notification.requestPermission().then(function (permission) {
       // If the user accepts, let's create a notification
       if (permission === "granted") {
-        var notification = new Notification(message || "Hi there!");
+        var notification = new Notification("Hi there!");
       }
     }).then(function (reg) {
       return reg.sync.register('syncTest');
     }).then(function () {
       console.log('Sync registered');
     }).catch(function (err) {
-      console.log('It broke');
-      console.log(err.message);
+      console.error('It broke', err.message);
     });
   }
+}
 
-  // At last, if the user has denied notifications, and you 
-  // want to be respectful there is no need to bother them any more.
+function handleError(e) {
+  console.error('issue in installing app. please try again');
 }
 
 // Registering our Service worker
-window.addEventListener('load', function () {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js', {
-      scope: './'
-    });
-    notifyMe();
-  }
-})
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js', {
+    scope: './'
+  });
+  notifyMe();
+}
 
 // prompt for pwa install
-window.addEventListener('beforeinstallprompt',function (e) {
+window.addEventListener('beforeinstallprompt', function (e) {
   // log the platforms provided as options in an install prompt 
   console.log(e.platforms); // e.g., ["web", "android", "windows"] 
   e.userChoice.then(function (choiceResult) {
