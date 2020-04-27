@@ -93,6 +93,9 @@ self.onactivate = function (event) {
 
 // check cache first if not found make network request
 self.onfetch = function (evt) {
+  // evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
+  //   return fromCache(evt.request).catch(update(evt.request).then(refresh));
+  // }));
   evt.respondWith(fromCache(evt.request).catch(function () {
     return fromNetwork(evt.request).catch(update(evt.request).then(refresh));
   }));
