@@ -1,11 +1,7 @@
-var VERSION = "static-v2";
+var VERSION = "static-v210";
 
 var cacheFirstFiles = [
-  "/",
-  "/index.html",
-  "/main.chunk.js",
-  "/vendors-main.chunk.js",
-  "/runtime.bundle.js",
+  "/"
 ];
 
 var OFFLINE_PAGE = '/offline.html'
@@ -15,6 +11,46 @@ var networkFirstFiles = [];
 // Below is the service worker code.
 
 var cacheFiles = cacheFirstFiles.concat(networkFirstFiles).concat(OFFLINE_PAGE);
+
+function* arrayGenerator(prefetchResources) {
+  for(let prefetchResource of prefetchResources) {
+    yield prefetchResource;
+  }
+}
+
+function preCache(cache) {
+  var _prefetchResources = [
+    "/index.html",
+    "/main.chunk.js",
+    "/vendors-main.chunk.js",
+    "/runtime.bundle.js",
+    "/4.chunk.js",
+    "/5.chunk.js",
+    "/6.chunk.js",
+    "/7.chunk.js"
+  ];
+
+  const generatorObject = arrayGenerator(_prefetchResources);
+    
+
+
+  prefetchResources.map(function(prefetchResource) {
+    var url = new URL(urlToPrefetch, location.href);
+    url.search += (url.search ? '&' : '?') + 'cache-bust=' + now;
+    var request = new Request(url, {mode: 'no-cors'});
+    fetch(request).then(function(response) {
+      if (response.status >= 400) {
+        throw new Error('request for ' + urlToPrefetch +
+          ' failed with status ' + response.statusText);
+      }
+
+      // Use the original URL without the cache-busting parameter as the key for cache.put().
+      return cache.put(urlToPrefetch, response);
+    }).catch(function(error) {
+      console.error('Not caching ' + urlToPrefetch + ' due to ' + error);
+    });
+  });
+}
 
 function removeCache() {
   return caches.keys().then(function (cacheNames) {
@@ -93,12 +129,12 @@ self.onactivate = function (event) {
 
 // check cache first if not found make network request
 self.onfetch = function (evt) {
-  // evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
-  //   return fromCache(evt.request).catch(update(evt.request).then(refresh));
-  // }));
-  evt.respondWith(fromCache(evt.request).catch(function () {
-    return fromNetwork(evt.request).catch(update(evt.request).then(refresh));
+  evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
+    return fromCache(evt.request).catch(update(evt.request).then(refresh));
   }));
+  // evt.respondWith(fromCache(evt.request).catch(function () {
+  //   return fromNetwork(evt.request).catch(update(evt.request).then(refresh));
+  // }));
 }
 
 // to send message from chrome debugging tools
