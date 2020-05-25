@@ -1,25 +1,18 @@
-var VERSION = "static-v210";
-
-var cacheFirstFiles = [
-  "/"
-];
-
-var OFFLINE_PAGE = '/offline.html'
-
-var networkFirstFiles = [];
+const VERSION = "static-v210";
+const OFFLINE_PAGE = '/offline.html';
 
 // Below is the service worker code.
-
-var cacheFiles = cacheFirstFiles.concat(networkFirstFiles).concat(OFFLINE_PAGE);
-
 function* arrayGenerator(prefetchResources) {
-  for(let prefetchResource of prefetchResources) {
+  for (let prefetchResource of prefetchResources) {
     yield prefetchResource;
   }
 }
 
-function preCache(cache) {
-  var _prefetchResources = [
+async function preCache(cache) {
+  const _prefetchResources = [
+    OFFLINE_PAGE,
+    "/",
+    "/registerworker.js",
     "/index.html",
     "/main.chunk.js",
     "/vendors-main.chunk.js",
@@ -31,25 +24,26 @@ function preCache(cache) {
   ];
 
   const generatorObject = arrayGenerator(_prefetchResources);
-    
+  let result = generatorObject.next();
 
-
-  prefetchResources.map(function(prefetchResource) {
-    var url = new URL(urlToPrefetch, location.href);
-    url.search += (url.search ? '&' : '?') + 'cache-bust=' + now;
-    var request = new Request(url, {mode: 'no-cors'});
-    fetch(request).then(function(response) {
-      if (response.status >= 400) {
-        throw new Error('request for ' + urlToPrefetch +
-          ' failed with status ' + response.statusText);
-      }
-
-      // Use the original URL without the cache-busting parameter as the key for cache.put().
-      return cache.put(urlToPrefetch, response);
-    }).catch(function(error) {
-      console.error('Not caching ' + urlToPrefetch + ' due to ' + error);
+  while (!result.done) {
+    let url = new URL(result.value, location.href);
+    let request = new Request(url, {
+      mode: 'no-cors'
     });
-  });
+    let response = await fetchResource(request);
+    if (response.ok) {
+      cache.put(result.value, response);
+    } else {
+      console.error('Not caching ' + result.value + ' due to ' + response.status);
+    }
+    result = generatorObject.next();
+  }
+  return cache;
+}
+
+function fetchResource(resource) {
+  return fetch(resource);
 }
 
 function removeCache() {
@@ -67,9 +61,8 @@ function removeCache() {
 
 function fromNetwork(request) {
   return fetch(request).then(function (response) {
+    update(request, respose);
     return response;
-  }).catch(function() {
-    return fromCache(OFFLINE_PAGE);
   });
 }
 
@@ -87,28 +80,10 @@ function fromCache(request) {
   });
 }
 
-function update(request) {
-  return caches.open(VERSION).then(function (cache) {
-    return fetch(request).then(function (response) {
-      if (request.method !== 'POST') {
-        cache.put(request, response.clone());
-      }
-      return response;
-    });
-  });
-}
-
-function refresh(response) {
-  return self.clients.matchAll().then(function (clients) {
-    if (response) {
-      clients.forEach(function (client) {
-        var message = {
-          type: 'refresh',
-          url: response.url,
-          eTag: response.headers.get('ETag')
-        };
-        client.postMessage(JSON.stringify(message));
-      });
+function update(request, response) {
+  caches.open(VERSION).then(function (cache) {
+    if (request.method !== 'POST') {
+      cache.put(request, response.clone());
     }
   });
 }
@@ -116,7 +91,7 @@ function refresh(response) {
 self.oninstall = function (event) {
   event.waitUntil(
     caches.open(VERSION).then(cache => {
-      return cache.addAll(cacheFiles);
+      preCache(cache);
     })
   );
 };
@@ -130,11 +105,8 @@ self.onactivate = function (event) {
 // check cache first if not found make network request
 self.onfetch = function (evt) {
   evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
-    return fromCache(evt.request).catch(update(evt.request).then(refresh));
+    return fromCache(evt.request).catch(fromCache(OFFLINE_PAGE));
   }));
-  // evt.respondWith(fromCache(evt.request).catch(function () {
-  //   return fromNetwork(evt.request).catch(update(evt.request).then(refresh));
-  // }));
 }
 
 // to send message from chrome debugging tools
